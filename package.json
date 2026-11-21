@@ -3,6 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
+	"packageManager": "yarn@1.22.22",
 	"scripts": {
 		"deploy": "wrangler deploy",
 		"dev": "wrangler dev",
@@ -16,7 +17,7 @@
 		"@cloudflare/workers-types": "^4.20260613.1",
 		"typescript": "^5.9.3",
 		"vitest": "~4.1.0",
-		"wrangler": "^4.59.1"
+		"wrangler": "4.135.0"
 	},
 	"dependencies": {}
 }
