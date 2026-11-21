@@ -99,6 +99,13 @@ const handleCallback = async (url: URL, env: Env) => {
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const url = new URL(request.url);
+		// Temporary, value-free diagnostic for preview OAuth configuration.
+		if (url.pathname === '/__oauth-status') {
+			return Response.json({
+				githubOAuthIdPresent: Boolean(env.GITHUB_OAUTH_ID),
+				githubOAuthSecretPresent: Boolean(env.GITHUB_OAUTH_SECRET),
+			});
+		}
 		if (url.pathname === '/auth') {
 			return handleAuth(url, env);
 		}
