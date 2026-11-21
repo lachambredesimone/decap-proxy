@@ -37,6 +37,10 @@ GITHUB_REPO_PRIVATE = "0"             # Should be set to "1", if your website re
 [previews.vars]
 GITHUB_REPO_PRIVATE = "0"
 
+# Preview environment variables (safe values used only by Wrangler previews)
+[previews.vars]
+GITHUB_REPO_PRIVATE = "0"
+
 # Bind the Workers AI model catalog. Run machine learning models, powered by serverless GPUs, on Cloudflare’s global network
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#workers-ai
 # [ai]
