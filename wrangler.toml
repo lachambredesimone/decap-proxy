@@ -16,7 +16,6 @@ name = "decap-proxy"
 # optional: uncomment the following line if you don't want wrangler to set up
 #           the worker to be available at the default workers.dev url of
 #               <worker-name>.<account-name>.workers.dev
-#           where <worker-name> is the "name" parameter configured above.
 #
 # workers_dev = false
 
@@ -37,10 +36,6 @@ GITHUB_REPO_PRIVATE = "0"             # Should be set to "1", if your website re
 [previews.vars]
 GITHUB_REPO_PRIVATE = "0"
 
-# Preview environment variables (safe values used only by Wrangler previews)
-[previews.vars]
-GITHUB_REPO_PRIVATE = "0"
-
 # Bind the Workers AI model catalog. Run machine learning models, powered by serverless GPUs, on Cloudflare’s global network
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#workers-ai
 # [ai]
@@ -56,7 +51,7 @@ GITHUB_REPO_PRIVATE = "0"
 # [browser]
 # binding = "MY_BROWSER"
 
-# Bind a D1 database. D1 is a serverless SQL database.
+# Bind a D1 database. D1 is Cloudflare's native serverless SQL database.
 # [d1_databases]
 # binding = "DB"
 # database_name = "my-database"
@@ -82,11 +77,6 @@ GITHUB_REPO_PRIVATE = "0"
 # binding = "MY_HYPERDRIVE"
 # id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
-# Bind a KV Namespace.
-# [[kv_namespaces]]
-# binding = "MY_KV_NAMESPACE"
-# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-
 # Bind an mTLS certificate.
 # [[mtls_certificates]]
 # binding = "MY_CERTIFICATE"
@@ -110,8 +100,3 @@ GITHUB_REPO_PRIVATE = "0"
 # [[services]]
 # binding = "MY_SERVICE"
 # service = "my-service"
-
-# Bind a Vectorize index.
-# [[vectorize]]
-# binding = "MY_INDEX"
-# index_name = "my-index"
