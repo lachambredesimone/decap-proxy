@@ -3,7 +3,7 @@ import { OAuthClient } from './oauth';
 interface Env {
 	GITHUB_OAUTH_ID: string;
 	GITHUB_OAUTH_SECRET: string;
-  GITHUB_REPO_PRIVATE?: string;
+	GITHUB_REPO_PRIVATE?: string;
 }
 
 function randomHex(bytes: number): string {
@@ -26,23 +26,30 @@ const createOAuth = (env: Env) => {
 	});
 };
 
+const hasOAuthConfig = (env: Env) =>
+	Boolean(env.GITHUB_OAUTH_ID && env.GITHUB_OAUTH_SECRET);
+
 const handleAuth = async (url: URL, env: Env) => {
 	const provider = url.searchParams.get('provider');
 	if (provider !== 'github') {
 		return new Response('Invalid provider', { status: 400 });
 	}
 
-  const repoIsPrivate = env.GITHUB_REPO_PRIVATE != undefined && env.GITHUB_REPO_PRIVATE !== '0';
-  const repoScope = repoIsPrivate ? 'repo,user' : 'public_repo,user';
+	if (!hasOAuthConfig(env)) {
+		return new Response('GitHub OAuth credentials are not configured', { status: 500 });
+	}
+
+	const repoIsPrivate = env.GITHUB_REPO_PRIVATE != undefined && env.GITHUB_REPO_PRIVATE !== '0';
+	const repoScope = repoIsPrivate ? 'repo,user' : 'public_repo,user';
 
 	const oauth2 = createOAuth(env);
 	const authorizationUri = oauth2.authorizeURL({
 		redirect_uri: `https://${url.hostname}/callback`,
 		scope: repoScope,
-		state: randomHex(4), // 4 bytes -> 8 hex chars
+		state: randomHex(4),
 	});
 
-	return new Response(null, { headers: { location: authorizationUri }, status: 301 });
+	return new Response(null, { headers: { location: authorizationUri }, status: 302 });
 };
 
 const callbackScriptResponse = (status: string, token: string) => {
@@ -72,6 +79,10 @@ const callbackScriptResponse = (status: string, token: string) => {
 };
 
 const handleCallback = async (url: URL, env: Env) => {
+	if (!hasOAuthConfig(env)) {
+		return new Response('GitHub OAuth credentials are not configured', { status: 500 });
+	}
+
 	const code = url.searchParams.get('code');
 	if (!code) {
 		return new Response('Missing code', { status: 400 });
@@ -88,13 +99,6 @@ const handleCallback = async (url: URL, env: Env) => {
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const url = new URL(request.url);
-    console.log(`url.pathname is ${url.pathname}`);
-		if (url.pathname === '/test-config') {
-  return new Response(JSON.stringify({
-    idPresent: Boolean(env.GITHUB_OAUTH_ID),
-    secretPresent: Boolean(env.GITHUB_OAUTH_SECRET)
-  }));
-}
 		if (url.pathname === '/auth') {
 			return handleAuth(url, env);
 		}
