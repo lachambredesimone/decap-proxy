@@ -18,9 +18,15 @@ export class OAuthClient {
 	authorizeURL(options: { redirect_uri: string; scope: string; state: string }) {
 		const { clientConfig } = this;
 		const { tokenHost, authorizePath } = clientConfig.target;
-		const { redirect_uri, scope, state } = options;
+		const authorizationUrl = new URL(authorizePath, tokenHost);
 
-		return `${tokenHost}${authorizePath}?response_type=code&client_id=${clientConfig.id}&redirect_uri=${redirect_uri}&scope=${scope}&state=${state}`;
+		authorizationUrl.searchParams.set('response_type', 'code');
+		authorizationUrl.searchParams.set('client_id', clientConfig.id);
+		authorizationUrl.searchParams.set('redirect_uri', options.redirect_uri);
+		authorizationUrl.searchParams.set('scope', options.scope);
+		authorizationUrl.searchParams.set('state', options.state);
+
+		return authorizationUrl.toString();
 	}
 
 	async getToken(options: { code: string; redirect_uri: string }) {
@@ -42,8 +48,13 @@ export class OAuthClient {
 				grant_type: 'authorization_code',
 			}),
 		});
-
+		if (!response.ok) {
+			throw new Error(`GitHub token exchange failed: ${response.status}`);
+		}
 		const json = (await response.json()) as { access_token: string };
+		if (!json.access_token) {
+			throw new Error('GitHub token response did not include an access token');
+		}
 		return json.access_token;
 	}
 }
