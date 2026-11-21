@@ -94,6 +94,12 @@ export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const url = new URL(request.url);
     console.log(`url.pathname is ${url.pathname}`);
+		if (url.pathname === '/test-config') {
+  return new Response(JSON.stringify({
+    idPresent: Boolean(env.GITHUB_OAUTH_ID),
+    secretPresent: Boolean(env.GITHUB_OAUTH_SECRET)
+  }));
+}
 		if (url.pathname === '/auth') {
 			return handleAuth(url, env);
 		}
